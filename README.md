@@ -12,11 +12,11 @@
 
 #### En caso de algún error:
 ```sudo apt-get -f install```
-<br>Y repetimos el comando para la librería
+<br><br>Y repetimos el comando para la librería
 
 Y listo!
-
-* Comentarios
+___
+###### Comentarios
 El código está hecho para que cuando encuentre una cara, mande una señal serial por medio de bluetooth
 En caso de que no se necesite se puede omitir esa parte sin ningún inconveniente.
 
