@@ -10,13 +10,13 @@
 #### Luego la libreria OpenCV:
 ```sudo apt-get install libopencv-dev python-opencv```
 
-En caso de algún error:
+#### En caso de algún error:
 ```sudo apt-get -f install```
-Y repetimos el comando para la librería
+<br>Y repetimos el comando para la librería
 
 Y listo!
 
-..* Comentarios
+* Comentarios
 El código está hecho para que cuando encuentre una cara, mande una señal serial por medio de bluetooth
 En caso de que no se necesite se puede omitir esa parte sin ningún inconveniente.
 
