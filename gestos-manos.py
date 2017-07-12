@@ -1,107 +1,107 @@
 import cv2
 import numpy as np
 import math
+import serial, time
 
+#setup
+#Conexion serial por bluetooth
+sr = serial.Serial('/dev/rfcomm0',9600, timeout=3)
+#Conexion sudo rfcomm connect 0 00:15:83:35:82:E1
 
+#crear el objeto de videocaptura
 cap = cv2.VideoCapture(0)
-while(cap.isOpened()):
-    # read image
-    ret, img = cap.read()
 
-    # get hand data from the rectangle sub window on the screen
+while(cap.isOpened()):
+    # leer la imagen
+    ret, img = cap.read()
+	
+	#obtener el gesto de las manos desde el rectangulo en la pantalla
     cv2.rectangle(img, (300,300), (100,100), (0,255,0),0)
     crop_img = img[100:300, 100:300]
 
-    # convert to grayscale
+	#convertir la imagen a escala de grises
     grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
-
-    # applying gaussian blur
+	
+	#aplicando desenfoque gaussiano
     value = (35, 35)
     blurred = cv2.GaussianBlur(grey, value, 0)
-
-    # thresholdin: Otsu's Binarization method
+	
+	
+    # Umbral: metodo de binarizacion de Otsu
     _, thresh1 = cv2.threshold(blurred, 127, 255,
                                cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
-    # show thresholded image
+    # muestra la imagen del umbral
     cv2.imshow('Thresholded', thresh1)
 
-    # check OpenCV version to avoid unpacking error
-    #(version, _, _) = cv2.__version__.split('.')
-
-    #if version == '3':
-    #    image, contours, hierarchy = cv2.findContours(thresh1.copy(), \
-    #           cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    #elif version == '2':
     contours, hierarchy = cv2.findContours(thresh1.copy(),cv2.RETR_TREE, \
 		cv2.CHAIN_APPROX_NONE)
 
-    # find contour with max area
+    # Encontrar un contorno con el area maxima
     cnt = max(contours, key = lambda x: cv2.contourArea(x))
 
-    # create bounding rectangle around the contour (can skip below two lines)
+    # crear un rectangulo para delimitar el contorno
     x, y, w, h = cv2.boundingRect(cnt)
     cv2.rectangle(crop_img, (x, y), (x+w, y+h), (0, 0, 255), 0)
 
-    # finding convex hull
+    # encontrar el convexHull
     hull = cv2.convexHull(cnt)
 
-    # drawing contours
+    # Dibujando contornos
     drawing = np.zeros(crop_img.shape,np.uint8)
     cv2.drawContours(drawing, [cnt], 0, (0, 255, 0), 0)
     cv2.drawContours(drawing, [hull], 0,(0, 0, 255), 0)
 
-    # finding convex hull
+    # encontrando el convexHull
     hull = cv2.convexHull(cnt, returnPoints=False)
 
-    # finding convexity defects
+    # encontrando defectos convexos
     defects = cv2.convexityDefects(cnt, hull)
     count_defects = 0
     cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
 
-    # applying Cosine Rule to find angle for all defects (between fingers)
-    # with angle > 90 degrees and ignore defects
+	#Aplicar la regla del coseno para encontrar todos los defectos entre los dedos
+	#con angulo > 90 grados e ignorar defectos
     for i in range(defects.shape[0]):
         s,e,f,d = defects[i,0]
 
         start = tuple(cnt[s][0])
         end = tuple(cnt[e][0])
         far = tuple(cnt[f][0])
-
-        # find length of all sides of triangle
+		
+		# encontrar la longitud de todos los lados del triangulo
         a = math.sqrt((end[0] - start[0])**2 + (end[1] - start[1])**2)
         b = math.sqrt((far[0] - start[0])**2 + (far[1] - start[1])**2)
         c = math.sqrt((end[0] - far[0])**2 + (end[1] - far[1])**2)
 
-        # apply cosine rule here
+        # aqui aplica la regla del coseno
         angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
-
-        # ignore angles > 90 and highlight rest with red dots
+		
+		#ignorar los angulos > 90 y mostrar el resto con puntos rojos
         if angle <= 90:
             count_defects += 1
             cv2.circle(crop_img, far, 1, [0,0,255], -1)
-        #dist = cv2.pointPolygonTest(cnt,far,True)
 
-        # draw a line from start to end i.e. the convex points (finger tips)
-        # (can skip this part)
         cv2.line(crop_img,start, end, [0,255,0], 2)
-        #cv2.circle(crop_img,far,5,[0,0,255],-1)
 
-    # define actions required
+	#acciones
     if count_defects == 1:
-        cv2.putText(img,"2 Dedo", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img,"2 Dedo AVAN", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        sr.write('a')
     elif count_defects == 2:
-        str = "3 Dedos"
-        cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+        cv2.putText(img,"3 Dedos IZQ", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+        sr.write('i')
     elif count_defects == 3:
-        cv2.putText(img,"4 Dedos", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img,"4 Dedos DER", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        sr.write('d')
     elif count_defects == 4:
-        cv2.putText(img,"5 dedos", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img,"5 dedos RET", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        sr.write('r')
     else:
         cv2.putText(img,"Haz algun gesto!", (50, 50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
 
-    # show appropriate images in windows
+	# mostrar imagenes en las ventanas
     cv2.imshow('Gesture', img)
     all_img = np.hstack((drawing, crop_img))
     cv2.imshow('Contours', all_img)
