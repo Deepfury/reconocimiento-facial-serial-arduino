@@ -1,4 +1,4 @@
-# Código en Python para el reconocimiento de rostros usando OpenCV en Raspberry Pi
+# Códigos en Python para el reconocimiento de rostros y de gestos de las manos usando OpenCV en Raspberry Pi
 
 ## Intrucciones
 
@@ -17,7 +17,7 @@
 Y listo!
 ___
 ###### Comentarios
-El código está hecho para que cuando encuentre una cara, mande una señal serial por medio de bluetooth
-En caso de que no se necesite se puede omitir esa parte sin ningún inconveniente.
+Al momento de hacer un reconocimiento (ya sea rostro o de gestos) manda señales seriales por medio de bluetooth a otro dispositivo
+En caso de que no se necesite se puede omitir o reemplazar esa parte sin ningún inconveniente.
 
-###### Créditos a [Glare](https://robologs.net/2014/04/25/instalar-opencv-en-raspberry-pi-2/)
+###### Créditos a [Glare](https://robologs.net/2014/04/25/instalar-opencv-en-raspberry-pi-2/) y a [vipul-sharma20](https://github.com/vipul-sharma20/gesture-opencv/blob/master/gesture.py)
