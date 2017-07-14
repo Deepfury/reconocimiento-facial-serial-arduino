@@ -1,5 +1,8 @@
+#Libreria para hacer calculos matriciales complejos
 import numpy as np
+#Libreria opencv
 import cv2
+#libreria para hacer communicacion serial en python pySerial
 import serial, time
 #import RPi.GPIO as GPIO
 
@@ -9,17 +12,21 @@ import serial, time
 
 #GPIO.setmode(GPIO.BCM)
 #GPIO.setup(17, GPIO.OUT)
+
+#se crea el objeto de para la conexion con el modulo de bluetooth HC-06
 sr = serial.Serial('/dev/rfcomm0',9600, timeout=3)
 
 
-#Cargar la plantilla e inicializar la webcam
+#Cargar la plantilla 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+#inicializa la webcam para capturar los frames
 cap = cv2.VideoCapture(0)
 
 while(True):
 	#se lee un frame y se guarda
 	ret, img = cap.read()
 	
+	#Sino hay imagen vuelve al inicio del ciclo a leer otra vez
 	if img is None:
 		continue
 	
