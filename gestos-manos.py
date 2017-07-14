@@ -85,6 +85,9 @@ while(cap.isOpened()):
         cv2.line(crop_img,start, end, [0,255,0], 2)
 
 	#acciones
+	#Va a preguntar cuantos espacios entre los dedos hay
+	#El algoritmo se encarga de encontrar espacios convexos entre 
+	#los dedos de las manos y eso es lo que identifica
     if count_defects == 1:
         cv2.putText(img,"2 Dedo AVAN", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
         sr.write('a')
